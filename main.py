@@ -1,10 +1,8 @@
 import os
-from playwright.async_api import async_playwright
+from rebrowser_playwright.async_api import async_playwright
 import random
 import asyncio
 
-BOTBROWSER_EXEC_PATH = "/usr/bin/chromium-browser-stable"
-EXTENSION_PATH = "./capsolver"
 
 def get_random_proxy():
     # Commented out the ones that don't seems effective
@@ -28,24 +26,30 @@ def get_random_proxy():
     proxy_password = proxy_parts[3]
     return proxy_server, proxy_username, proxy_password
 
-PROXY_SERVER, PROXY_USERNAME, PROXY_PASSWORD = get_random_proxy()
-
 def choose_random_profile(profile_folder):
     profiles = [f for f in os.listdir(profile_folder) if os.path.isfile(os.path.join(profile_folder, f))]
     if not profiles:
         raise FileNotFoundError(f"No profiles found in {profile_folder}")
     return os.path.join(profile_folder, random.choice(profiles))
 
-BOT_PROFILE_PATH = choose_random_profile("./profiles")
-
-# Specify the path for your persistent profile (user data directory)
-USER_DATA_DIR = "./my_profile"
+# Load from file italian.txt the links
+def load_links(file_path):
+    with open(file_path, "r") as f:
+        return [line.strip() for line in f.readlines()]
 
 async def populate_history(page):
-    await page.goto("https://www.google.com/", wait_until="commit")
-    await page.goto("https://www.youtube.com", wait_until="commit")
-    await page.goto("https://amazon.com/", wait_until="commit")
-    await page.goto("https://www.merriam-webster.com/dictionary/purpose", wait_until="commit")
+    for link in HISTORY:
+        print(f"Visiting {link}...")
+        await page.goto(link, wait_until="commit")
+        await asyncio.sleep(random.randint(1, 10)) 
+
+
+BOTBROWSER_EXEC_PATH = "/usr/bin/chromium-browser-stable"
+EXTENSION_PATH = "./capsolver"
+HISTORY = load_links("histories/italian.txt")
+PROXY_SERVER, PROXY_USERNAME, PROXY_PASSWORD = get_random_proxy()
+BOT_PROFILE_PATH = choose_random_profile("./profiles")
+USER_DATA_DIR = "./my_profile"
 
 async def main():
     # Check if the profile directory exists; if not, create it.
@@ -67,10 +71,11 @@ async def main():
                 # If you need to use a specific executable (e.g., BotBrowser), uncomment the line below:
                 executable_path=BOTBROWSER_EXEC_PATH,
                 args=[
-                    "--disable-blink-features=AutomationControlled",
                     f"--disable-extensions-except={EXTENSION_PATH}",
                     f"--load-extension={EXTENSION_PATH}",
                     f"--bot-profile={BOT_PROFILE_PATH}",
+                    "--start-maximized",
+                    "--disable-blink-features=AutomationControlled"
                 ],
                 proxy={
                     "server": PROXY_SERVER,
@@ -80,21 +85,37 @@ async def main():
             )
             print("BROWSER OPENED with persistent profile.")
 
+            context.set_default_navigation_timeout(60000)
+            context.set_default_timeout(60000)
             page = await context.new_page()
+            await page.evaluate("navigator.webdriver = undefined")
+            await page.evaluate("""() => {
+                Object.defineProperty(navigator, 'webdriver', {get: () => [false]});
+                Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
+                Object.defineProperty(navigator, 'platform', {get: () => 'Win32'});
+            }""")
+            await page.evaluate("""() => {
+                const getParameter = WebGLRenderingContext.prototype.getParameter;
+                WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                    if (parameter === 37445) return 'Intel';
+                    if (parameter === 37446) return 'Intel HD Graphics';
+                    return getParameter(parameter);
+                };
+            }""")
             await page.add_init_script("""
                 // @ts-expect-error - Playwright binding will cause leak
                 delete window._playwrightbinding_;
                 // @ts-expect-error - Playwright binding will cause leak
                 delete window.__pwInitScripts;
             """)
-            print("Navigating to first target page...")
             if not already_profiled:
                 await populate_history(page)
-            print("Navigating to second target page...")
+            print("Navigating to first target page...")
             await page.goto("https://antcpt.com/score_detector/")
-            await asyncio.sleep(3)
-            print("Navigating to third target page...")
-            await page.goto("https://job-boards.greenhouse.io/grafanalabs/jobs/5427808004")
+            await asyncio.sleep(4)
+            print("Navigating to second target page...")
+            # await page.goto("https://jobs.lever.co/BTSE/72f4e7a1-7e8f-4a62-ae89-87cc457423ce")
+            await page.goto("https://job-boards.greenhouse.io/grafanalabs/jobs/5373283004")
             await asyncio.sleep(1000000)
             await context.close()
 

@@ -1,0 +1,16 @@
+https://www.google.it/
+https://www.youtube.com
+https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&ifkv=ASSHykoe8ydr4iJWohj7FZVdKwcmXZnxYsKisxzjbPa1i_kgBpRnYX_xa5wbtfRKV_6DCexCOHCw&rip=1&sacu=1&service=mail&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S-1106194775%3A1739263734205701&ddm=1
+https://www.amazon.it/tappetino-modellismo-taglio-strati-artigianato/dp/B0CQ4DLPS5?ref_=Oct_d_obs_d_4355214031_1&pd_rd_w=6l5mf&content-id=amzn1.sym.e9f62797-c641-4bbe-bcfe-a4c8304cbbaa&pf_rd_p=e9f62797-c641-4bbe-bcfe-a4c8304cbbaa&pf_rd_r=RK9FJFZAQ87PQ0GW4G7K&pd_rd_wg=4B9Ji&pd_rd_r=94bbece8-5d50-4bcc-b648-bfc4f14bf743&pd_rd_i=B0CQ4DLPS5
+https://www.youtube.com/watch?v=-HhWFUK2Zs0
+https://corrieredibologna.corriere.it/notizie/cronaca/25_febbraio_11/grosso-incendio-l-inalca-di-reggio-emilia-residenti-evacuati-le-fiamme-si-vedono-anche-dall-autostrada-dc9b152e-4221-49cb-accf-97a0cce67xlk.shtm
+https://www.instagram.com
+https://www.giallozafferano.it
+https://www.corriere.it
+https://www.repubblica.it
+https://www.libero.it
+https://www.virgilio.it
+https://www.ansa.it
+https://www.gazzetta.it
+https://www.ilmeteo.it
+https://www.subito.it
