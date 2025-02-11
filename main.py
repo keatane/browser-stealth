@@ -1,10 +1,10 @@
 import os
-from rebrowser_playwright.async_api import async_playwright
 import random
 import asyncio
+from rebrowser_playwright.async_api import async_playwright
 
 
-def get_random_proxy():
+async def get_random_proxy():
     # Commented out the ones that don't seems effective
     proxy_list = [
         "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_m8GZ7wAwu3:Eze1pRr5",
@@ -26,32 +26,30 @@ def get_random_proxy():
     proxy_password = proxy_parts[3]
     return proxy_server, proxy_username, proxy_password
 
-def choose_random_profile(profile_folder):
+async def choose_random_profile(profile_folder):
     profiles = [f for f in os.listdir(profile_folder) if os.path.isfile(os.path.join(profile_folder, f))]
     if not profiles:
         raise FileNotFoundError(f"No profiles found in {profile_folder}")
     return os.path.join(profile_folder, random.choice(profiles))
 
-# Load from file italian.txt the links
-def load_links(file_path):
+async def load_links(file_path):
     with open(file_path, "r") as f:
         return [line.strip() for line in f.readlines()]
 
-async def populate_history(page):
-    for link in HISTORY:
+async def populate_history(page, history):
+    for link in history:
         print(f"Visiting {link}...")
         await page.goto(link, wait_until="commit")
         await asyncio.sleep(random.randint(1, 10)) 
 
-
-BOTBROWSER_EXEC_PATH = "/usr/bin/chromium-browser-stable"
-EXTENSION_PATH = "./capsolver"
-HISTORY = load_links("histories/italian.txt")
-PROXY_SERVER, PROXY_USERNAME, PROXY_PASSWORD = get_random_proxy()
-BOT_PROFILE_PATH = choose_random_profile("./profiles")
-USER_DATA_DIR = "./my_profile"
-
 async def main():
+    BOTBROWSER_EXEC_PATH = "/usr/bin/chromium-browser-stable"
+    EXTENSION_PATH = "./capsolver"
+    HISTORY = await load_links("histories/italian.txt")
+    PROXY_SERVER, PROXY_USERNAME, PROXY_PASSWORD = await get_random_proxy()
+    BOT_PROFILE_PATH = await choose_random_profile("./profiles")
+    USER_DATA_DIR = "./my_profile"
+    
     # Check if the profile directory exists; if not, create it.
     already_profiled = False
     if not os.path.exists(USER_DATA_DIR):
@@ -109,7 +107,7 @@ async def main():
                 delete window.__pwInitScripts;
             """)
             if not already_profiled:
-                await populate_history(page)
+                await populate_history(page, HISTORY)
             print("Navigating to first target page...")
             await page.goto("https://antcpt.com/score_detector/")
             await asyncio.sleep(4)
