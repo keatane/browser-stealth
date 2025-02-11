@@ -8,14 +8,14 @@ async def get_random_proxy():
     # Commented out the ones that don't seems effective
     proxy_list = [
         "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_m8GZ7wAwu3:Eze1pRr5",
-        "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_CSi85QDJA7:Eze1pRr5",
-        # "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_zpQrMylHJQ:Eze1pRr5",
-        # "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_QZ83eBSIwo:Eze1pRr5",
+        # "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_CSi85QDJA7:Eze1pRr5",
+        "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_zpQrMylHJQ:Eze1pRr5",
+        "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_QZ83eBSIwo:Eze1pRr5",
         "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_NN8TTvXFv3:Eze1pRr5",
-        # "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_EJzfaqMztX:Eze1pRr5",
-        # "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_Fp6hU5XqkE:Eze1pRr5",
-        # "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_LFTGsk5dV2:Eze1pRr5",
-        # "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_13MbUOb8gA:Eze1pRr5",
+        "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_EJzfaqMztX:Eze1pRr5",
+        "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_Fp6hU5XqkE:Eze1pRr5",
+        "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_LFTGsk5dV2:Eze1pRr5",
+        "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_13MbUOb8gA:Eze1pRr5",
         "gate.nstproxy.io:24125:19FFD234FCF495D8-residential-country_IT-r_10m-s_XSZKGJkGQ9:Eze1pRr5"
     ]
     random_proxy = random.choice(proxy_list)
@@ -39,8 +39,8 @@ async def load_links(file_path):
 async def populate_history(page, history):
     for link in history:
         print(f"Visiting {link}...")
-        await page.goto(link, wait_until="commit")
-        await asyncio.sleep(random.randint(1, 10)) 
+        await page.goto(link, wait_until="load")
+        await asyncio.sleep(random.randint(1, 20)) 
 
 async def main():
     BOTBROWSER_EXEC_PATH = "/usr/bin/chromium-browser-stable"
@@ -66,12 +66,11 @@ async def main():
             context = await p.chromium.launch_persistent_context(
                 USER_DATA_DIR,
                 headless=False,
-                # If you need to use a specific executable (e.g., BotBrowser), uncomment the line below:
                 executable_path=BOTBROWSER_EXEC_PATH,
                 args=[
                     f"--disable-extensions-except={EXTENSION_PATH}",
                     f"--load-extension={EXTENSION_PATH}",
-                    f"--bot-profile={BOT_PROFILE_PATH}",
+                    # f"--bot-profile={BOT_PROFILE_PATH}",
                     "--start-maximized",
                     "--disable-blink-features=AutomationControlled"
                 ],
@@ -106,6 +105,7 @@ async def main():
                 // @ts-expect-error - Playwright binding will cause leak
                 delete window.__pwInitScripts;
             """)
+            
             if not already_profiled:
                 await populate_history(page, HISTORY)
             print("Navigating to first target page...")
